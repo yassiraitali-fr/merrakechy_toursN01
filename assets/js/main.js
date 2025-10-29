@@ -2595,12 +2595,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // Add this to your serviceDetails object in your JavaScript
 const rentalServices = {
-    'city-bikes': {
-        title: 'City Bikes',
+    'city-bike': {
+        title: 'City Bike',
         subtitle: 'Comfortable bikes perfect for exploring Marrakech',
         price: 15,
         duration: 'Up to 24 hours',
         location: 'Marrakech',
+        heroImage: '../assets/images/activities/ballon.jpg',
+        mainImage: '../assets/images/activities/ballon.jpg',
         description: 'Our city bikes are perfect for exploring Marrakech at your own pace. Each rental includes a helmet, lock, and optional city map. The bikes are regularly maintained and adjusted for your comfort.',
         includes: [
             'Comfortable city bike',
@@ -2625,7 +2627,62 @@ const rentalServices = {
             'Cancellation': 'Free up to 24h before'
         }
     },
-    // Add other rental items similarly
+    'mountain-bike': {
+        title: 'Mountain Bike',
+        subtitle: 'Robust bikes for mountain trails',
+        price: 25,
+        duration: 'Up to 24 hours',
+        location: 'Atlas Mountains',
+        heroImage: '../assets/images/activities/desert_camping.jpg',
+        mainImage: '../assets/images/activities/desert_camping.jpg',
+        description: 'High-quality mountain bikes ideal for exploring trails in the Atlas Mountains. Includes helmet, repair kit, and optional guide.',
+        includes: ['Mountain bike', 'Helmet', 'Repair kit', 'Optional guide'],
+        bring: ['Valid ID or passport', 'Credit card for deposit', 'Appropriate clothing'],
+        availability: 'Daily, 7:00 AM - 6:00 PM',
+        additionalInfo: { 'Security Deposit': '€150', 'Cancellation': 'Free up to 48h before' }
+    },
+    'economy-car': {
+        title: 'Economy Car',
+        subtitle: 'Fuel-efficient economy car',
+        price: 40,
+        duration: 'Per day',
+        location: 'Marrakech',
+        heroImage: '../assets/images/itinerary/car_fleet.webp',
+        mainImage: '../assets/images/itinerary/car_fleet.webp',
+        description: 'Fuel-efficient economy car, ideal for city driving and day trips. Includes insurance and 24/7 assistance.',
+        includes: ['Vehicle rental', 'Insurance', 'Unlimited mileage'],
+        bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
+        availability: 'Daily',
+        additionalInfo: { 'Insurance': 'Included', 'Deposit': '€300 refundable' }
+    },
+    'suv-car': {
+        title: '4x4 SUV',
+        subtitle: 'Rugged vehicle for adventurous trips',
+        price: 75,
+        duration: 'Per day',
+        location: 'Various regions',
+        heroImage: '../assets/images/itinerary/Car_Pic.webp',
+        mainImage: '../assets/images/itinerary/Car_Pic.webp',
+        description: 'Rugged 4x4 vehicle suitable for desert and mountain trips. Includes insurance and GPS.',
+        includes: ['4x4 vehicle', 'Insurance', 'GPS'],
+        bring: ['Driver license', 'ID/passport'],
+        availability: 'Daily',
+        additionalInfo: { 'Offroad Capable': 'Yes', 'Deposit': '€500' }
+    },
+    'luxury-car': {
+        title: 'Luxury Sedan',
+        subtitle: 'Premium comfort and service',
+        price: 120,
+        duration: 'Per day',
+        location: 'Marrakech',
+        heroImage: '../assets/images/tours/merzoga.jpeg',
+        mainImage: '../assets/images/tours/merzoga.jpeg',
+        description: 'Comfortable luxury vehicle with premium features and dedicated support.',
+        includes: ['Luxury vehicle', 'Premium support', 'Insurance'],
+        bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
+        availability: 'Daily',
+        additionalInfo: { 'Chauffeur Option': 'Available', 'Deposit': '€700' }
+    }
 };
 
 // Merge this with your existing serviceDetails object
