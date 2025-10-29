@@ -950,7 +950,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reviews: 189
         },
         'chefchaouen-tour': {
-            title: 'Imlil and the High Atlas Excursion – An Immersive Journey into Berber Mountain Life',
+            title: 'Imlil and the High Atlas Excursion �� An Immersive Journey into Berber Mountain Life',
             description: `<p>Set off to discover Imlil, a charming village nestled at the foot of Mount Toubkal, the highest peak in North Africa. Just 1.5 hours from Marrakech, this excursion offers a peaceful and authentic experience in the heart of the High Atlas.
                 With a local guide, explore mountain trails, pass through Berber villages clinging to the valley slopes, and take in terraced orchards, clear rivers, and breathtaking landscapes. Enjoy a tea break with a local family or a traditional lunch in a Berber home for a warm and genuine cultural exchange.
                 Accessible to everyone, this day trip combines nature, culture, and gentle hiking—an invigorating escape from the city's hustle and bustle.</p>`,
@@ -2681,7 +2681,7 @@ const rentalServices = {
         includes: ['4x4 vehicle', 'Insurance', 'GPS'],
         bring: ['Driver license', 'ID/passport'],
         availability: 'Daily',
-        additionalInfo: { 'Offroad Capable': 'Yes', 'Deposit': '€500' }
+        additionalInfo: { 'Offroad Capable': 'Yes', 'Deposit': '���500' }
     },
     'luxury-car': {
         title: 'Audi A3',
@@ -2736,3 +2736,75 @@ if (typeof Swiper !== 'undefined' && document.querySelector('.hero-slider')) {
     // Swiper not available — rely on existing fallback slider logic
     if (typeof Swiper === 'undefined') console.warn('Swiper library not found. Falling back to built-in slider.');
 }
+
+// Replace homepage testimonials with real reviews (injected to avoid editing large HTML file)
+(function replaceTestimonials() {
+    function createTestimonialHTML(initial, name, country, text, active) {
+        return `
+        <div class="testimonial-item ${active ? 'active' : ''}">
+            <div class="testimonial-content">
+                <div class="testimonial-header">
+                    <div class="google-icon">
+                        <img src="assets/images/icons/google-icon.png" alt="">
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p>"${text}"</p>
+                <div class="testimonial-author">
+                    <div class="avatar-initial">${initial}</div>
+                    <div class="author-info">
+                        <h4>${name}</h4>
+                        <span>${country}</span>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const wrapper = document.querySelector('.testimonials-wrapper');
+        const dotsContainer = document.querySelector('.testimonial-dots');
+        if (!wrapper) return;
+
+        const reviews = [
+            {
+                initial: 'V',
+                name: 'Virginie PIOU',
+                country: 'France',
+                text: 'Very good guide. Attentive to his clients and speaks French well. He knows how to share his knowledge. Respectful of schedules and excellent at planning excursions. A very pleasant part of the trip was spent in his company.'
+            },
+            {
+                initial: 'L',
+                name: 'LAFON Françoise',
+                country: 'France',
+                text: 'A superb guide who speaks French well and is very knowledgeable about his country. His humor and his kindness made us laugh a lot. Would definitely do it again!'
+            },
+            {
+                initial: 'M',
+                name: 'Magali Guerin',
+                country: 'France',
+                text: 'Thank you to Idriss for his kindness. A warm welcome worthy of a beautiful country like Morocco. Good advice, good explanations, and discretion. Very professional. I hope our paths will cross again one day.'
+            }
+        ];
+
+        // Build HTML
+        const html = reviews.map((r, i) => createTestimonialHTML(r.initial, r.name, r.country, r.text, i === 0)).join('\n');
+        wrapper.innerHTML = html;
+
+        // Update dots
+        if (dotsContainer) {
+            dotsContainer.innerHTML = reviews.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}"></span>`).join('');
+        }
+
+        // Re-init testimonial slider if present in main.js slider logic
+        if (typeof initTestimonials === 'function') {
+            try { initTestimonials(); } catch (e) { /* ignore */ }
+        }
+    });
+})();
