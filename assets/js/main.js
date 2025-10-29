@@ -2674,11 +2674,12 @@ const rentalServices = {
     'luxury-car': {
         title: 'Luxury Sedan',
         subtitle: 'Premium comfort and service',
-        price: 120,
+        price: 90, // 90 EUR (900 DH)
+        priceDH: 900,
         duration: 'Per day',
         location: 'Marrakech',
-        heroImage: '../assets/images/tours/merzoga.jpeg',
-        mainImage: '../assets/images/tours/merzoga.jpeg',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F8eb818f38c3c4037934be09cab1b564d?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F8eb818f38c3c4037934be09cab1b564d?format=webp&width=800',
         description: 'Comfortable luxury vehicle with premium features and dedicated support.',
         includes: ['Luxury vehicle', 'Premium support', 'Insurance'],
         bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
