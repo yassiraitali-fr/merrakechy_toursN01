@@ -1121,8 +1121,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
 
-    // Make serviceDetails globally available
-    window.serviceDetails = serviceDetails;
+    // Make serviceDetails globally available (merge with any existing global entries like rentals)
+    window.serviceDetails = Object.assign({}, window.serviceDetails || {}, serviceDetails);
 
     // Destination data
     const destinationDetails = {
