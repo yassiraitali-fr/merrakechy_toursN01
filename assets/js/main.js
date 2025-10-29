@@ -2629,7 +2629,8 @@ const rentalServices = {
 };
 
 // Merge this with your existing serviceDetails object
-Object.assign(serviceDetails, rentalServices);
+window.serviceDetails = window.serviceDetails || {};
+Object.assign(window.serviceDetails, rentalServices);
 
 window.addEventListener('load', function () {
         document.querySelector('.preloader').classList.add('fade-out');
