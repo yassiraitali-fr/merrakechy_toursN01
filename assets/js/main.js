@@ -2599,6 +2599,7 @@ const rentalServices = {
         title: 'City Bike',
         subtitle: 'Comfortable bikes perfect for exploring Marrakech',
         price: 20,
+        priceUnit: '/day',
         duration: 'Up to 24 hours',
         location: 'Marrakech',
         heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F3400b1afbdaf41a2a7009f6cf9740bc9?format=webp&width=800',
