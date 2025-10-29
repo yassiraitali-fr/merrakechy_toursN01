@@ -479,6 +479,11 @@ function getImagesForItem(category, id, defaultImage) {
           itemData = destinationsData[id];
         }
         break;
+      case 'rental':
+        if (window.serviceDetails && window.serviceDetails[id]) {
+          itemData = window.serviceDetails[id];
+        }
+        break;
     }
     
     // If we found the item data and it has gallery images, use them
