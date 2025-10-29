@@ -2632,6 +2632,7 @@ const rentalServices = {
         title: 'Mountain Bike',
         subtitle: 'Robust bikes for mountain trails',
         price: 20,
+        priceUnit: '/day',
         duration: 'Up to 24 hours',
         location: 'Atlas Mountains',
         heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F9c30764ed90640e19711f7a4d9aeef95?format=webp&width=800',
