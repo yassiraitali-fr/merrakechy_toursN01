@@ -2680,14 +2680,19 @@ const rentalServices = {
         additionalInfo: { 'Offroad Capable': 'Yes', 'Deposit': '€500' }
     },
     'luxury-car': {
-        title: 'Luxury Sedan',
-        subtitle: 'Premium comfort and service',
+        title: 'Audi A3',
+        subtitle: 'Premium compact with modern features',
         price: 90, // 90 EUR (900 DH)
         priceDH: 900,
         duration: 'Per day',
         location: 'Marrakech',
-        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F8eb818f38c3c4037934be09cab1b564d?format=webp&width=800',
-        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F8eb818f38c3c4037934be09cab1b564d?format=webp&width=800',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+        galleryImages: [
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800'
+        ],
         description: 'Comfortable luxury vehicle with premium features and dedicated support.',
         includes: ['Luxury vehicle', 'Premium support', 'Insurance'],
         bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
