@@ -2693,7 +2693,7 @@ const rentalServices = {
             'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
             'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800'
         ],
-        description: 'Comfortable luxury vehicle with premium features and dedicated support.',
+        description: 'Audi A3 — premium compact offering refined comfort, responsive performance, and advanced technology. Ideal for those seeking a stylish and efficient car for city use and longer trips. Comes with premium support, insurance, and a clean, well-maintained interior for a pleasant driving experience.',
         includes: ['Luxury vehicle', 'Premium support', 'Insurance'],
         bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
         availability: 'Daily',
