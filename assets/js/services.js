@@ -207,9 +207,10 @@ function switchToSection(sectionName) {
     // Map section names to filter buttons
     const sectionMap = {
         'activities': 'activities',
-        'tours': 'tours', 
+        'tours': 'tours',
         'transportation': 'transportation',
-        'destinations': 'destinations'
+        'destinations': 'destinations',
+        'rentals': 'rentals'
     };
     
     const targetSection = sectionMap[sectionName];
