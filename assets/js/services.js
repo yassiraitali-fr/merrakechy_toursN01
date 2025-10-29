@@ -64,7 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Show/hide service cards based on category
             serviceCards.forEach(card => {
-                if (category === 'all-activities' || category === 'all-tours' || category === 'all-transportation') {
+                // If the category indicates 'all' for this section, show all
+                if (category.startsWith('all-')) {
                     card.style.display = 'flex';
                 } else if (card.classList.contains(category)) {
                     card.style.display = 'flex';
