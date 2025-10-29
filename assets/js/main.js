@@ -2808,3 +2808,66 @@ if (typeof Swiper !== 'undefined' && document.querySelector('.hero-slider')) {
         }
     });
 })();
+
+function initTestimonials() {
+    const wrapper = document.querySelector('.testimonials-wrapper');
+    if (!wrapper) return;
+    const items = Array.from(wrapper.querySelectorAll('.testimonial-item'));
+    const dotsContainer = document.querySelector('.testimonial-dots');
+    const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
+    const prevArrow = document.querySelector('.prev-arrow');
+    const nextArrow = document.querySelector('.next-arrow');
+
+    // Clear previous interval if any
+    if (window.__testimonialInterval) {
+        clearInterval(window.__testimonialInterval);
+        window.__testimonialInterval = null;
+    }
+
+    let currentIndex = 0;
+
+    function showTestimonial(index) {
+        if (items.length === 0) return;
+        if (index < 0) index = items.length - 1;
+        if (index >= items.length) index = 0;
+        currentIndex = index;
+        items.forEach((it, i) => it.classList.toggle('active', i === currentIndex));
+        dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+    }
+
+    // Reset dots container to remove old listeners
+    if (dotsContainer) {
+        dotsContainer.innerHTML = dots.map((d, i) => `<span class="dot ${i === currentIndex ? 'active' : ''}"></span>`).join('');
+    }
+
+    // Re-query dots after resetting
+    const newDots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
+    newDots.forEach((dot, i) => dot.addEventListener('click', () => showTestimonial(i)));
+
+    // Replace arrows to remove old listeners and add new ones
+    if (prevArrow && prevArrow.parentNode) {
+        const np = prevArrow.cloneNode(true);
+        prevArrow.parentNode.replaceChild(np, prevArrow);
+        np.addEventListener('click', () => showTestimonial(currentIndex - 1));
+    }
+    if (nextArrow && nextArrow.parentNode) {
+        const nn = nextArrow.cloneNode(true);
+        nextArrow.parentNode.replaceChild(nn, nextArrow);
+        nn.addEventListener('click', () => showTestimonial(currentIndex + 1));
+    }
+
+    // Auto-rotate
+    window.__testimonialInterval = setInterval(() => {
+        showTestimonial(currentIndex + 1);
+    }, 5000);
+
+    // Show first
+    showTestimonial(0);
+}
+
+// Initialize testimonials once on load in case the DOM is already ready
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initTestimonials, 100);
+} else {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initTestimonials, 100));
+}
