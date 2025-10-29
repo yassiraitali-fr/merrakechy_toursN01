@@ -29,8 +29,10 @@ function loadProgramData(category, id) {
             programData = toursData[id];
         } else if (category === 'transportation' && typeof transportationData !== 'undefined') {
             programData = transportationData[id];
+        } else if (category === 'rental' && window.serviceDetails && window.serviceDetails[id]) {
+            programData = window.serviceDetails[id];
         }
-        
+
         if (programData) {
             console.log('Program found:', programData.title);
             displayProgramInfo(programData, category, id);
@@ -38,7 +40,7 @@ function loadProgramData(category, id) {
             console.log('Program not found!');
             showError();
         }
-        
+
     } catch (error) {
         console.error('Error loading program:', error);
         showError();
