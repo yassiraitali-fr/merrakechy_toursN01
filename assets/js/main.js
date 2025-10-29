@@ -978,7 +978,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reviews: 189
         },
         'atlas-tour': {
-            title: 'Berber Adventure – Full-Day Excursion to the 3 Valleys from Marrakech',
+            title: 'Berber Adventure ��� Full-Day Excursion to the 3 Valleys from Marrakech',
             description: `<p>Set out to explore Imlil, a charming village nestled at the foot of Mount Toubkal, the highest peak in North Africa. Just 1.5 hours from Marrakech, this excursion immerses you in the peaceful and authentic atmosphere of the High Atlas Mountains.
                     Guided by a local expert, hike along scenic mountain trails, pass through Berber villages perched on valley slopes, and take in terraced orchards, clear rivers, and breathtaking landscapes. Enjoy a tea break with a local family or a traditional lunch in a Berber home—an unforgettable moment of connection and warmth.
                     Accessible to everyone, this day of gentle hiking, nature, and cultural discovery is a refreshing escape from the bustle of the city.</p>`,
@@ -2633,16 +2633,28 @@ window.serviceDetails = window.serviceDetails || {};
 Object.assign(window.serviceDetails, rentalServices);
 
 window.addEventListener('load', function () {
-        document.querySelector('.preloader').classList.add('fade-out');
-        setTimeout(() => {
-            document.querySelector('.preloader').style.display = 'none';
-        }, 500); // matches the transition duration
+        const preloaderEl = document.querySelector('.preloader');
+        if (preloaderEl) {
+            preloaderEl.classList.add('fade-out');
+            setTimeout(() => {
+                preloaderEl.style.display = 'none';
+            }, 500); // matches the transition duration
+        }
     });
 
-    // Add swipe + arrow keys
-const slider = new Swiper('.hero-slider', {
-  loop: true,
-  autoplay: { delay: 5000 },
-  keyboard: true,
-  pagination: { el: '.slider-nav', clickable: true }
-});
+    // Add swipe + arrow keys (only if Swiper is loaded)
+if (typeof Swiper !== 'undefined' && document.querySelector('.hero-slider')) {
+    try {
+        const slider = new Swiper('.hero-slider', {
+            loop: true,
+            autoplay: { delay: 5000 },
+            keyboard: true,
+            pagination: { el: '.slider-nav', clickable: true }
+        });
+    } catch (err) {
+        console.error('Error initializing Swiper:', err);
+    }
+} else {
+    // Swiper not available — rely on existing fallback slider logic
+    if (typeof Swiper === 'undefined') console.warn('Swiper library not found. Falling back to built-in slider.');
+}
