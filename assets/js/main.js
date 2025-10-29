@@ -2673,7 +2673,7 @@ const rentalServices = {
             'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
             'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F8ce3f8f5437b4b5bbfccfbc1ace1844d?format=webp&width=800'
         ],
-        description: 'Rugged 4x4 vehicle suitable for desert and mountain trips. Includes insurance and GPS.',
+        description: 'Suzuki Cupra — sporty and dynamic crossover offering agile handling and comfort. Perfect for both urban driving and weekend adventures, it comes with modern infotainment, safety features, and a responsive engine. Insurance and roadside assistance are included.',
         includes: ['4x4 vehicle', 'Insurance', 'GPS'],
         bring: ['Driver license', 'ID/passport'],
         availability: 'Daily',
