@@ -33,6 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log('Found transportation data');
                 }
                 break;
+            case 'rental':
+                // Rental items are stored in window.serviceDetails
+                if (window.serviceDetails && window.serviceDetails[id]) {
+                    programData = window.serviceDetails[id];
+                    console.log('Found rental data');
+                }
+                break;
             case 'destination':
                 if (typeof destinationsData !== 'undefined' && destinationsData[id]) {
                     programData = destinationsData[id];
@@ -470,6 +477,11 @@ function getImagesForItem(category, id, defaultImage) {
       case 'destination':
         if (typeof destinationsData !== 'undefined' && destinationsData[id]) {
           itemData = destinationsData[id];
+        }
+        break;
+      case 'rental':
+        if (window.serviceDetails && window.serviceDetails[id]) {
+          itemData = window.serviceDetails[id];
         }
         break;
     }
@@ -978,4 +990,3 @@ setTimeout(() => {
     createSimpleLightbox();
     addLightboxClicks();
 }, 2000);
-

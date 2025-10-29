@@ -29,8 +29,10 @@ function loadProgramData(category, id) {
             programData = toursData[id];
         } else if (category === 'transportation' && typeof transportationData !== 'undefined') {
             programData = transportationData[id];
+        } else if (category === 'rental' && window.serviceDetails && window.serviceDetails[id]) {
+            programData = window.serviceDetails[id];
         }
-        
+
         if (programData) {
             console.log('Program found:', programData.title);
             displayProgramInfo(programData, category, id);
@@ -38,7 +40,7 @@ function loadProgramData(category, id) {
             console.log('Program not found!');
             showError();
         }
-        
+
     } catch (error) {
         console.error('Error loading program:', error);
         showError();
@@ -181,19 +183,19 @@ function initializeForm() {
     // Initialize enhanced date picker FIRST
     addDatePickerCSS();
     initializeDatePicker();
-    
+
     // Handle participant count changes
     const adultsSelect = document.getElementById('adults');
     const childrenSelect = document.getElementById('children');
-    
+
     if (adultsSelect) {
         adultsSelect.addEventListener('change', updateParticipants);
     }
-    
+
     if (childrenSelect) {
         childrenSelect.addEventListener('change', updateParticipants);
     }
-    
+
     // Handle date changes
     const dateInput = document.getElementById('date');
     if (dateInput) {
@@ -202,19 +204,96 @@ function initializeForm() {
             if (summaryDate) {
                 // Format the date nicely
                 const date = new Date(this.value);
-                const options = { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                 };
                 summaryDate.textContent = date.toLocaleDateString('en-US', options);
             }
+            updateTotalPrice();
         });
     }
-    
+
+    // Rental-specific handling: show From/To and compute total days
+    const category = document.getElementById('category').value;
+    if (category === 'rental') {
+        const rentalPeriod = document.getElementById('rental-period');
+        const singleDateGroup = document.getElementById('single-date-group');
+        if (rentalPeriod) rentalPeriod.style.display = 'block';
+        if (singleDateGroup) singleDateGroup.style.display = 'none';
+
+        const fromInput = document.getElementById('from-date');
+        const toInput = document.getElementById('to-date');
+
+        const onRentalDateChange = () => {
+            const summaryDate = document.getElementById('summary-date');
+            if (!fromInput || !toInput) return;
+            const fromVal = fromInput.value ? new Date(fromInput.value) : null;
+            const toVal = toInput.value ? new Date(toInput.value) : null;
+
+            if (fromVal && toVal && toVal < fromVal) {
+                alert('Return date must be the same or after the start date');
+                toInput.value = '';
+                return;
+            }
+
+            if (summaryDate) {
+                if (fromVal && toVal) {
+                    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                    summaryDate.textContent = `${fromVal.toLocaleDateString('en-US', options)} — ${toVal.toLocaleDateString('en-US', options)}`;
+                } else if (fromVal) {
+                    summaryDate.textContent = fromVal.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                }
+            }
+
+            updateTotalPrice();
+        };
+
+        if (fromInput) fromInput.addEventListener('change', onRentalDateChange);
+        if (toInput) toInput.addEventListener('change', onRentalDateChange);
+    }
+
     // Initial participant update
     updateParticipants();
+
+    // Special handling for airport-transfer: hide children, enforce 1-7 people note
+    const programId = document.getElementById('program-id').value;
+    if (category === 'transportation' && programId === 'airport-transfer') {
+        const childrenSelectEl = document.getElementById('children');
+        if (childrenSelectEl) {
+            // Hide children select row
+            const parent = childrenSelectEl.closest('.form-group');
+            if (parent) parent.style.display = 'none';
+            childrenSelectEl.value = '0';
+        }
+
+        // Update summary participants note
+        const summaryParticipants = document.getElementById('summary-participants');
+        if (summaryParticipants) {
+            summaryParticipants.textContent = '1-7 people — For groups above 7 please contact us for a custom price';
+        }
+
+        // Ensure adult select max is 7
+        const adultsSelectEl = document.getElementById('adults');
+        if (adultsSelectEl) {
+            // If options exceed 7, clamp value and warn
+            if (parseInt(adultsSelectEl.value, 10) > 7) {
+                alert('For groups above 7 people please contact us for a custom price.');
+                adultsSelectEl.value = '7';
+            }
+            // Add listener to enforce cap
+            adultsSelectEl.addEventListener('change', function() {
+                const val = parseInt(this.value, 10) || 1;
+                if (val > 7) {
+                    alert('For groups above 7 people please contact us for a custom price.');
+                    this.value = '7';
+                }
+                updateParticipants();
+            });
+        }
+    }
 }
 
 function updateParticipants() {
@@ -240,9 +319,10 @@ function updateTotalPrice() {
     const category = document.getElementById("category").value;
     const id = document.getElementById("program-id").value;
 
-    if (adultsSelect && childrenSelect && summaryTotal) {
-        const adults = parseInt(adultsSelect.value) || 2;
-        const children = parseInt(childrenSelect.value) || 0;
+    if (adultsSelect && summaryTotal) {
+        const adults = parseInt(adultsSelect.value) || 1;
+        // childrenSelect may not exist or may be hidden for some services
+        const children = document.getElementById('children') ? (parseInt(document.getElementById('children').value) || 0) : 0;
         const totalPeople = adults + children;
 
         let totalPrice = 0;
@@ -255,17 +335,34 @@ function updateTotalPrice() {
             programData = activitiesData[id];
         } else if (category === 'tour' && typeof toursData !== 'undefined') {
             programData = toursData[id];
+        } else if (category === 'transportation' && typeof transportationData !== 'undefined') {
+            programData = transportationData[id];
+        } else if (category === 'rental' && window.serviceDetails && window.serviceDetails[id]) {
+            programData = window.serviceDetails[id];
         }
 
         if (programData) {
-            if (programData.groupPricing) {
+            // Special-case: Airport Transfer is per vehicle (flat €15) for up to 7 people
+            if (category === 'transportation' && id === 'airport-transfer') {
+                const vehiclePrice = programData.price || 15;
+                // If total people <=7, price is vehiclePrice; else prompt contact
+                if (totalPeople <= 7 && totalPeople >= 1) {
+                    totalPrice = vehiclePrice;
+                } else if (totalPeople > 7) {
+                    // Show message and set total price to 0 to indicate custom pricing
+                    totalPrice = 0;
+                    const contactNote = document.getElementById('contact-note');
+                    if (contactNote) contactNote.style.display = 'block';
+                }
+                adultPrice = vehiclePrice;
+            } else if (programData.groupPricing) {
                 if (category === 'activity') {
                     totalPrice = calculateDynamicPrice(id, totalPeople);
                 } else if (category === 'tour') {
                     totalPrice = calculateDynamicTourPrice(id, totalPeople);
                 }
                 // For display purposes in breakdown, we can approximate per person price
-                adultPrice = totalPrice / totalPeople; 
+                adultPrice = totalPrice / totalPeople;
                 childPrice = totalPrice / totalPeople; // Assuming same for children in group pricing
             } else if (programData.pricing) {
                 adultPrice = programData.pricing.adult;

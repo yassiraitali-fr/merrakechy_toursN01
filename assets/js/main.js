@@ -403,19 +403,30 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentSlide = 0;
     let slideInterval;
 
-    // Function to show a specific slide
+    // Function to show a specific slide (safe checks)
     function showSlide(index) {
+        if (!slides || slides.length === 0) return;
+
+        // Normalize index
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+
         // Reset current slide
         slides.forEach(slide => {
             slide.classList.remove('active');
         });
-        dots.forEach(dot => {
-            dot.classList.remove('active');
-        });
 
-        // Activate selected slide
-        slides[index].classList.add('active');
-        dots[index].classList.add('active');
+        // Reset dots if present
+        if (dots && dots.length > 0) {
+            dots.forEach(dot => {
+                dot.classList.remove('active');
+            });
+        }
+
+        // Activate selected slide and dot (if exists)
+        const slideEl = slides[index];
+        if (slideEl) slideEl.classList.add('active');
+        if (dots && dots[index]) dots[index].classList.add('active');
 
         // Update current slide index
         currentSlide = index;
@@ -423,14 +434,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to show next slide
     function nextSlide() {
+        if (!slides || slides.length === 0) return;
         currentSlide = (currentSlide + 1) % slides.length;
         showSlide(currentSlide);
     }
 
     // Start automatic slideshow
     function startSlideshow() {
-        slideInterval = setInterval(nextSlide, 3000); // Change slide every 5 seconds
+        if (!slides || slides.length === 0) return;
+        // Prevent multiple intervals
+        if (slideInterval) clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, 3000); // Change slide every 3 seconds
     }
+
 
     // Event listeners for dots
     dots.forEach((dot, index) => {
@@ -934,7 +950,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reviews: 189
         },
         'chefchaouen-tour': {
-            title: 'Imlil and the High Atlas Excursion – An Immersive Journey into Berber Mountain Life',
+            title: 'Imlil and the High Atlas Excursion �� An Immersive Journey into Berber Mountain Life',
             description: `<p>Set off to discover Imlil, a charming village nestled at the foot of Mount Toubkal, the highest peak in North Africa. Just 1.5 hours from Marrakech, this excursion offers a peaceful and authentic experience in the heart of the High Atlas.
                 With a local guide, explore mountain trails, pass through Berber villages clinging to the valley slopes, and take in terraced orchards, clear rivers, and breathtaking landscapes. Enjoy a tea break with a local family or a traditional lunch in a Berber home for a warm and genuine cultural exchange.
                 Accessible to everyone, this day trip combines nature, culture, and gentle hiking—an invigorating escape from the city's hustle and bustle.</p>`,
@@ -962,7 +978,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reviews: 189
         },
         'atlas-tour': {
-            title: 'Berber Adventure – Full-Day Excursion to the 3 Valleys from Marrakech',
+            title: 'Berber Adventure ��� Full-Day Excursion to the 3 Valleys from Marrakech',
             description: `<p>Set out to explore Imlil, a charming village nestled at the foot of Mount Toubkal, the highest peak in North Africa. Just 1.5 hours from Marrakech, this excursion immerses you in the peaceful and authentic atmosphere of the High Atlas Mountains.
                     Guided by a local expert, hike along scenic mountain trails, pass through Berber villages perched on valley slopes, and take in terraced orchards, clear rivers, and breathtaking landscapes. Enjoy a tea break with a local family or a traditional lunch in a Berber home—an unforgettable moment of connection and warmth.
                     Accessible to everyone, this day of gentle hiking, nature, and cultural discovery is a refreshing escape from the bustle of the city.</p>`,
@@ -1104,6 +1120,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
+
+    // Make serviceDetails globally available (merge with any existing global entries like rentals)
+    window.serviceDetails = Object.assign({}, window.serviceDetails || {}, serviceDetails);
 
     // Destination data
     const destinationDetails = {
@@ -2576,13 +2595,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 // Add this to your serviceDetails object in your JavaScript
 const rentalServices = {
-    'city-bikes': {
-        title: 'City Bikes',
+    'city-bike': {
+        title: 'City Bike',
         subtitle: 'Comfortable bikes perfect for exploring Marrakech',
-        price: 15,
+        price: 20,
+        priceUnit: '/day',
         duration: 'Up to 24 hours',
         location: 'Marrakech',
-        description: 'Our city bikes are perfect for exploring Marrakech at your own pace. Each rental includes a helmet, lock, and optional city map. The bikes are regularly maintained and adjusted for your comfort.',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F3400b1afbdaf41a2a7009f6cf9740bc9?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F3400b1afbdaf41a2a7009f6cf9740bc9?format=webp&width=800',
+        description: 'Our city bikes are perfect for exploring Marrakech at your own pace. Each rental includes a helmet, lock, and optional city map. The bikes are regularly maintained and adjusted for your comfort. Ideal for short trips around the city and effortless sightseeing.',
         includes: [
             'Comfortable city bike',
             'Helmet and safety gear',
@@ -2606,24 +2628,246 @@ const rentalServices = {
             'Cancellation': 'Free up to 24h before'
         }
     },
-    // Add other rental items similarly
+    'mountain-bike': {
+        title: 'Mountain Bike',
+        subtitle: 'Robust bikes for mountain trails',
+        price: 20,
+        priceUnit: '/day',
+        duration: 'Up to 24 hours',
+        location: 'Atlas Mountains',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F9c30764ed90640e19711f7a4d9aeef95?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F9c30764ed90640e19711f7a4d9aeef95?format=webp&width=800',
+        description: 'High-quality mountain bikes ideal for exploring trails in the Atlas Mountains. Includes helmet, repair kit, and optional guide. Built to handle rough terrain, these bikes are suitable for adventurous riders seeking scenic routes and challenging trails.',
+        includes: ['Mountain bike', 'Helmet', 'Repair kit', 'Optional guide'],
+        bring: ['Valid ID or passport', 'Credit card for deposit', 'Appropriate clothing'],
+        availability: 'Daily, 7:00 AM - 6:00 PM',
+        additionalInfo: { 'Security Deposit': '€150', 'Cancellation': 'Free up to 48h before' }
+    },
+    'economy-car': {
+        title: 'Volkswagen Tiguan',
+        subtitle: 'Reliable and comfortable SUV',
+        price: 90, // 90 EUR (900 DH)
+        priceDH: 900,
+        priceUnit: '/day',
+        duration: 'Per day',
+        location: 'Marrakech',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F9cf04cb153ef4e3295da09c7b23bbef3?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F9cf04cb153ef4e3295da09c7b23bbef3?format=webp&width=800',
+        galleryImages: [
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F9cf04cb153ef4e3295da09c7b23bbef3?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F07ec11f9fb754f7f83f259328a8c5983?format=webp&width=800'
+        ],
+        description: 'Volkswagen Tiguan — a reliable and comfortable SUV ideal for both city streets and highway journeys. Featuring spacious seating, modern safety features, and ample luggage capacity, it is perfect for families and travelers. Includes insurance, unlimited mileage, and 24/7 roadside assistance for peace of mind during your trips.',
+        includes: ['Vehicle rental', 'Insurance', 'Unlimited mileage'],
+        bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
+        availability: 'Daily',
+        additionalInfo: { 'Insurance': 'Included', 'Deposit': '€300 refundable' }
+    },
+    'suv-car': {
+        title: 'Suzuki Cupra',
+        subtitle: 'Sporty and capable crossover',
+        price: 90, // 90 EUR (900 DH)
+        priceDH: 900,
+        priceUnit: '/day',
+        duration: 'Per day',
+        location: 'Various regions',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+        galleryImages: [
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F8ce3f8f5437b4b5bbfccfbc1ace1844d?format=webp&width=800'
+        ],
+        description: 'Suzuki Cupra — sporty and dynamic crossover offering agile handling and comfort. Perfect for both urban driving and weekend adventures, it comes with modern infotainment, safety features, and a responsive engine. Insurance and roadside assistance are included.',
+        includes: ['4x4 vehicle', 'Insurance', 'GPS'],
+        bring: ['Driver license', 'ID/passport'],
+        availability: 'Daily',
+        additionalInfo: { 'Offroad Capable': 'Yes', 'Deposit': '���500' }
+    },
+    'luxury-car': {
+        title: 'Audi A3',
+        subtitle: 'Premium compact with modern features',
+        price: 90, // 90 EUR (900 DH)
+        priceDH: 900,
+        priceUnit: '/day',
+        duration: 'Per day',
+        location: 'Marrakech',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+        galleryImages: [
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800'
+        ],
+        description: 'Audi A3 — premium compact offering refined comfort, responsive performance, and advanced technology. Ideal for those seeking a stylish and efficient car for city use and longer trips. Comes with premium support, insurance, and a clean, well-maintained interior for a pleasant driving experience.',
+        includes: ['Luxury vehicle', 'Premium support', 'Insurance'],
+        bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
+        availability: 'Daily',
+        additionalInfo: { 'Chauffeur Option': 'Available', 'Deposit': '€700' }
+    }
 };
 
 // Merge this with your existing serviceDetails object
-Object.assign(serviceDetails, rentalServices);
+window.serviceDetails = window.serviceDetails || {};
+Object.assign(window.serviceDetails, rentalServices);
 
 window.addEventListener('load', function () {
-        document.querySelector('.preloader').classList.add('fade-out');
-        setTimeout(() => {
-            document.querySelector('.preloader').style.display = 'none';
-        }, 500); // matches the transition duration
+        const preloaderEl = document.querySelector('.preloader');
+        if (preloaderEl) {
+            preloaderEl.classList.add('fade-out');
+            setTimeout(() => {
+                preloaderEl.style.display = 'none';
+            }, 500); // matches the transition duration
+        }
     });
 
-    // Add swipe + arrow keys
-const slider = new Swiper('.hero-slider', {
-  loop: true,
-  autoplay: { delay: 5000 },
-  keyboard: true,
-  pagination: { el: '.slider-nav', clickable: true }
-});
+    // Add swipe + arrow keys (only if Swiper is loaded)
+if (typeof Swiper !== 'undefined' && document.querySelector('.hero-slider')) {
+    try {
+        const slider = new Swiper('.hero-slider', {
+            loop: true,
+            autoplay: { delay: 5000 },
+            keyboard: true,
+            pagination: { el: '.slider-nav', clickable: true }
+        });
+    } catch (err) {
+        console.error('Error initializing Swiper:', err);
+    }
+} else {
+    // Swiper not available — rely on existing fallback slider logic
+    if (typeof Swiper === 'undefined') console.warn('Swiper library not found. Falling back to built-in slider.');
+}
 
+// Replace homepage testimonials with real reviews (injected to avoid editing large HTML file)
+(function replaceTestimonials() {
+    function createTestimonialHTML(initial, name, country, text, active) {
+        return `
+        <div class="testimonial-item ${active ? 'active' : ''}">
+            <div class="testimonial-content">
+                <div class="testimonial-header">
+                    <div class="google-icon">
+                        <img src="assets/images/icons/google-icon.png" alt="">
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p>"${text}"</p>
+                <div class="testimonial-author">
+                    <div class="avatar-initial">${initial}</div>
+                    <div class="author-info">
+                        <h4>${name}</h4>
+                        <span>${country}</span>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const wrapper = document.querySelector('.testimonials-wrapper');
+        const dotsContainer = document.querySelector('.testimonial-dots');
+        if (!wrapper) return;
+
+        const reviews = [
+            {
+                initial: 'V',
+                name: 'Virginie PIOU',
+                country: 'France',
+                text: 'Very good guide. Attentive to his clients and speaks French well. He knows how to share his knowledge. Respectful of schedules and excellent at planning excursions. A very pleasant part of the trip was spent in his company.'
+            },
+            {
+                initial: 'L',
+                name: 'LAFON Françoise',
+                country: 'France',
+                text: 'A superb guide who speaks French well and is very knowledgeable about his country. His humor and his kindness made us laugh a lot. Would definitely do it again!'
+            },
+            {
+                initial: 'M',
+                name: 'Magali Guerin',
+                country: 'France',
+                text: 'Thank you to Idriss for his kindness. A warm welcome worthy of a beautiful country like Morocco. Good advice, good explanations, and discretion. Very professional. I hope our paths will cross again one day.'
+            }
+        ];
+
+        // Build HTML
+        const html = reviews.map((r, i) => createTestimonialHTML(r.initial, r.name, r.country, r.text, i === 0)).join('\n');
+        wrapper.innerHTML = html;
+
+        // Update dots
+        if (dotsContainer) {
+            dotsContainer.innerHTML = reviews.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}"></span>`).join('');
+        }
+
+        // Re-init testimonial slider if present in main.js slider logic
+        if (typeof initTestimonials === 'function') {
+            try { initTestimonials(); } catch (e) { /* ignore */ }
+        }
+    });
+})();
+
+function initTestimonials() {
+    const wrapper = document.querySelector('.testimonials-wrapper');
+    if (!wrapper) return;
+    const items = Array.from(wrapper.querySelectorAll('.testimonial-item'));
+    const dotsContainer = document.querySelector('.testimonial-dots');
+    const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
+    const prevArrow = document.querySelector('.prev-arrow');
+    const nextArrow = document.querySelector('.next-arrow');
+
+    // Clear previous interval if any
+    if (window.__testimonialInterval) {
+        clearInterval(window.__testimonialInterval);
+        window.__testimonialInterval = null;
+    }
+
+    let currentIndex = 0;
+
+    function showTestimonial(index) {
+        if (items.length === 0) return;
+        if (index < 0) index = items.length - 1;
+        if (index >= items.length) index = 0;
+        currentIndex = index;
+        items.forEach((it, i) => it.classList.toggle('active', i === currentIndex));
+        dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+    }
+
+    // Reset dots container to remove old listeners
+    if (dotsContainer) {
+        dotsContainer.innerHTML = dots.map((d, i) => `<span class="dot ${i === currentIndex ? 'active' : ''}"></span>`).join('');
+    }
+
+    // Re-query dots after resetting
+    const newDots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
+    newDots.forEach((dot, i) => dot.addEventListener('click', () => showTestimonial(i)));
+
+    // Replace arrows to remove old listeners and add new ones
+    if (prevArrow && prevArrow.parentNode) {
+        const np = prevArrow.cloneNode(true);
+        prevArrow.parentNode.replaceChild(np, prevArrow);
+        np.addEventListener('click', () => showTestimonial(currentIndex - 1));
+    }
+    if (nextArrow && nextArrow.parentNode) {
+        const nn = nextArrow.cloneNode(true);
+        nextArrow.parentNode.replaceChild(nn, nextArrow);
+        nn.addEventListener('click', () => showTestimonial(currentIndex + 1));
+    }
+
+    // Auto-rotate
+    window.__testimonialInterval = setInterval(() => {
+        showTestimonial(currentIndex + 1);
+    }, 5000);
+
+    // Show first
+    showTestimonial(0);
+}
+
+// Initialize testimonials once on load in case the DOM is already ready
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initTestimonials, 100);
+} else {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initTestimonials, 100));
+}
