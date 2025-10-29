@@ -300,14 +300,28 @@ function updateTotalPrice() {
         }
 
         if (programData) {
-            if (programData.groupPricing) {
+            if (category === 'rental') {
+                // Rentals are priced per day (programData.price)
+                const fromInput = document.getElementById('from-date');
+                const toInput = document.getElementById('to-date');
+                let days = 1;
+                if (fromInput && toInput && fromInput.value && toInput.value) {
+                    const from = new Date(fromInput.value);
+                    const to = new Date(toInput.value);
+                    const msPerDay = 24 * 60 * 60 * 1000;
+                    days = Math.ceil((to - from) / msPerDay) || 1;
+                    if (days < 1) days = 1;
+                }
+                adultPrice = programData.price || 0;
+                totalPrice = adultPrice * days;
+            } else if (programData.groupPricing) {
                 if (category === 'activity') {
                     totalPrice = calculateDynamicPrice(id, totalPeople);
                 } else if (category === 'tour') {
                     totalPrice = calculateDynamicTourPrice(id, totalPeople);
                 }
                 // For display purposes in breakdown, we can approximate per person price
-                adultPrice = totalPrice / totalPeople; 
+                adultPrice = totalPrice / totalPeople;
                 childPrice = totalPrice / totalPeople; // Assuming same for children in group pricing
             } else if (programData.pricing) {
                 adultPrice = programData.pricing.adult;
