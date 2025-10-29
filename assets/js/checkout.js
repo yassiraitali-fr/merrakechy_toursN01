@@ -257,6 +257,43 @@ function initializeForm() {
 
     // Initial participant update
     updateParticipants();
+
+    // Special handling for airport-transfer: hide children, enforce 1-7 people note
+    const programId = document.getElementById('program-id').value;
+    if (category === 'transportation' && programId === 'airport-transfer') {
+        const childrenSelectEl = document.getElementById('children');
+        if (childrenSelectEl) {
+            // Hide children select row
+            const parent = childrenSelectEl.closest('.form-group');
+            if (parent) parent.style.display = 'none';
+            childrenSelectEl.value = '0';
+        }
+
+        // Update summary participants note
+        const summaryParticipants = document.getElementById('summary-participants');
+        if (summaryParticipants) {
+            summaryParticipants.textContent = '1-7 people — For groups above 7 please contact us for a custom price';
+        }
+
+        // Ensure adult select max is 7
+        const adultsSelectEl = document.getElementById('adults');
+        if (adultsSelectEl) {
+            // If options exceed 7, clamp value and warn
+            if (parseInt(adultsSelectEl.value, 10) > 7) {
+                alert('For groups above 7 people please contact us for a custom price.');
+                adultsSelectEl.value = '7';
+            }
+            // Add listener to enforce cap
+            adultsSelectEl.addEventListener('change', function() {
+                const val = parseInt(this.value, 10) || 1;
+                if (val > 7) {
+                    alert('For groups above 7 people please contact us for a custom price.');
+                    this.value = '7';
+                }
+                updateParticipants();
+            });
+        }
+    }
 }
 
 function updateParticipants() {
