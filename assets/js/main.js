@@ -2668,6 +2668,7 @@ const rentalServices = {
         subtitle: 'Sporty and capable crossover',
         price: 90, // 90 EUR (900 DH)
         priceDH: 900,
+        priceUnit: '/day',
         duration: 'Per day',
         location: 'Various regions',
         heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
