@@ -2659,11 +2659,12 @@ const rentalServices = {
     'suv-car': {
         title: '4x4 SUV',
         subtitle: 'Rugged vehicle for adventurous trips',
-        price: 75,
+        price: 90, // 90 EUR (900 DH)
+        priceDH: 900,
         duration: 'Per day',
         location: 'Various regions',
-        heroImage: '../assets/images/itinerary/Car_Pic.webp',
-        mainImage: '../assets/images/itinerary/Car_Pic.webp',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
         description: 'Rugged 4x4 vehicle suitable for desert and mountain trips. Includes insurance and GPS.',
         includes: ['4x4 vehicle', 'Insurance', 'GPS'],
         bring: ['Driver license', 'ID/passport'],
