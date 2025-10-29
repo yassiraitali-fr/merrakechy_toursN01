@@ -183,19 +183,19 @@ function initializeForm() {
     // Initialize enhanced date picker FIRST
     addDatePickerCSS();
     initializeDatePicker();
-    
+
     // Handle participant count changes
     const adultsSelect = document.getElementById('adults');
     const childrenSelect = document.getElementById('children');
-    
+
     if (adultsSelect) {
         adultsSelect.addEventListener('change', updateParticipants);
     }
-    
+
     if (childrenSelect) {
         childrenSelect.addEventListener('change', updateParticipants);
     }
-    
+
     // Handle date changes
     const dateInput = document.getElementById('date');
     if (dateInput) {
@@ -204,17 +204,57 @@ function initializeForm() {
             if (summaryDate) {
                 // Format the date nicely
                 const date = new Date(this.value);
-                const options = { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                 };
                 summaryDate.textContent = date.toLocaleDateString('en-US', options);
             }
+            updateTotalPrice();
         });
     }
-    
+
+    // Rental-specific handling: show From/To and compute total days
+    const category = document.getElementById('category').value;
+    if (category === 'rental') {
+        const rentalPeriod = document.getElementById('rental-period');
+        const singleDateGroup = document.getElementById('single-date-group');
+        if (rentalPeriod) rentalPeriod.style.display = 'block';
+        if (singleDateGroup) singleDateGroup.style.display = 'none';
+
+        const fromInput = document.getElementById('from-date');
+        const toInput = document.getElementById('to-date');
+
+        const onRentalDateChange = () => {
+            const summaryDate = document.getElementById('summary-date');
+            if (!fromInput || !toInput) return;
+            const fromVal = fromInput.value ? new Date(fromInput.value) : null;
+            const toVal = toInput.value ? new Date(toInput.value) : null;
+
+            if (fromVal && toVal && toVal < fromVal) {
+                alert('Return date must be the same or after the start date');
+                toInput.value = '';
+                return;
+            }
+
+            if (summaryDate) {
+                if (fromVal && toVal) {
+                    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                    summaryDate.textContent = `${fromVal.toLocaleDateString('en-US', options)} — ${toVal.toLocaleDateString('en-US', options)}`;
+                } else if (fromVal) {
+                    summaryDate.textContent = fromVal.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                }
+            }
+
+            updateTotalPrice();
+        };
+
+        if (fromInput) fromInput.addEventListener('change', onRentalDateChange);
+        if (toInput) toInput.addEventListener('change', onRentalDateChange);
+    }
+
     // Initial participant update
     updateParticipants();
 }
