@@ -403,19 +403,30 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentSlide = 0;
     let slideInterval;
 
-    // Function to show a specific slide
+    // Function to show a specific slide (safe checks)
     function showSlide(index) {
+        if (!slides || slides.length === 0) return;
+
+        // Normalize index
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+
         // Reset current slide
         slides.forEach(slide => {
             slide.classList.remove('active');
         });
-        dots.forEach(dot => {
-            dot.classList.remove('active');
-        });
 
-        // Activate selected slide
-        slides[index].classList.add('active');
-        dots[index].classList.add('active');
+        // Reset dots if present
+        if (dots && dots.length > 0) {
+            dots.forEach(dot => {
+                dot.classList.remove('active');
+            });
+        }
+
+        // Activate selected slide and dot (if exists)
+        const slideEl = slides[index];
+        if (slideEl) slideEl.classList.add('active');
+        if (dots && dots[index]) dots[index].classList.add('active');
 
         // Update current slide index
         currentSlide = index;
@@ -423,14 +434,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to show next slide
     function nextSlide() {
+        if (!slides || slides.length === 0) return;
         currentSlide = (currentSlide + 1) % slides.length;
         showSlide(currentSlide);
     }
 
     // Start automatic slideshow
     function startSlideshow() {
-        slideInterval = setInterval(nextSlide, 3000); // Change slide every 5 seconds
+        if (!slides || slides.length === 0) return;
+        // Prevent multiple intervals
+        if (slideInterval) clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, 3000); // Change slide every 3 seconds
     }
+
 
     // Event listeners for dots
     dots.forEach((dot, index) => {
