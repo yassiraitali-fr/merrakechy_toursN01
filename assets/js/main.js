@@ -2644,11 +2644,12 @@ const rentalServices = {
     'economy-car': {
         title: 'Economy Car',
         subtitle: 'Fuel-efficient economy car',
-        price: 40,
+        price: 90, // 90 EUR (900 DH)
+        priceDH: 900,
         duration: 'Per day',
         location: 'Marrakech',
-        heroImage: '../assets/images/itinerary/car_fleet.webp',
-        mainImage: '../assets/images/itinerary/car_fleet.webp',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F16a9c70e3aa44a77aaef35f544046480?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F16a9c70e3aa44a77aaef35f544046480?format=webp&width=800',
         description: 'Fuel-efficient economy car, ideal for city driving and day trips. Includes insurance and 24/7 assistance.',
         includes: ['Vehicle rental', 'Insurance', 'Unlimited mileage'],
         bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
