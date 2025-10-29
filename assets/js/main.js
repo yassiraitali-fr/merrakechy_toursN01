@@ -2648,6 +2648,7 @@ const rentalServices = {
         subtitle: 'Reliable and comfortable SUV',
         price: 90, // 90 EUR (900 DH)
         priceDH: 900,
+        priceUnit: '/day',
         duration: 'Per day',
         location: 'Marrakech',
         heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F9cf04cb153ef4e3295da09c7b23bbef3?format=webp&width=800',
