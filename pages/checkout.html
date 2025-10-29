@@ -242,7 +242,21 @@
                         <div class="checkout-section">
                             <h3>Booking Details</h3>
 
-                            <div class="form-group">
+                            <!-- Rental period fields (shown only for rentals) -->
+                            <div id="rental-period" style="display:none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="from-date">From*</label>
+                                        <input type="date" id="from-date" name="rental_from">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="to-date">To*</label>
+                                        <input type="date" id="to-date" name="rental_to">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="single-date-group">
                                 <label for="date">Date*</label>
                                 <input type="text" id="date" name="date" class="datepicker" required>
                             </div>
