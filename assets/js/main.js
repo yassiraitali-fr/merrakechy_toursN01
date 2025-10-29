@@ -2598,12 +2598,12 @@ const rentalServices = {
     'city-bike': {
         title: 'City Bike',
         subtitle: 'Comfortable bikes perfect for exploring Marrakech',
-        price: 15,
+        price: 20,
         duration: 'Up to 24 hours',
         location: 'Marrakech',
         heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F3400b1afbdaf41a2a7009f6cf9740bc9?format=webp&width=800',
         mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F3400b1afbdaf41a2a7009f6cf9740bc9?format=webp&width=800',
-        description: 'Our city bikes are perfect for exploring Marrakech at your own pace. Each rental includes a helmet, lock, and optional city map. The bikes are regularly maintained and adjusted for your comfort.',
+        description: 'Our city bikes are perfect for exploring Marrakech at your own pace. Each rental includes a helmet, lock, and optional city map. The bikes are regularly maintained and adjusted for your comfort. Ideal for short trips around the city and effortless sightseeing.',
         includes: [
             'Comfortable city bike',
             'Helmet and safety gear',
