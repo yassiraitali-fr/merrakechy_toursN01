@@ -319,9 +319,10 @@ function updateTotalPrice() {
     const category = document.getElementById("category").value;
     const id = document.getElementById("program-id").value;
 
-    if (adultsSelect && childrenSelect && summaryTotal) {
-        const adults = parseInt(adultsSelect.value) || 2;
-        const children = parseInt(childrenSelect.value) || 0;
+    if (adultsSelect && summaryTotal) {
+        const adults = parseInt(adultsSelect.value) || 1;
+        // childrenSelect may not exist or may be hidden for some services
+        const children = document.getElementById('children') ? (parseInt(document.getElementById('children').value) || 0) : 0;
         const totalPeople = adults + children;
 
         let totalPrice = 0;
@@ -334,23 +335,26 @@ function updateTotalPrice() {
             programData = activitiesData[id];
         } else if (category === 'tour' && typeof toursData !== 'undefined') {
             programData = toursData[id];
+        } else if (category === 'transportation' && typeof transportationData !== 'undefined') {
+            programData = transportationData[id];
+        } else if (category === 'rental' && window.serviceDetails && window.serviceDetails[id]) {
+            programData = window.serviceDetails[id];
         }
 
         if (programData) {
-            if (category === 'rental') {
-                // Rentals are priced per day (programData.price)
-                const fromInput = document.getElementById('from-date');
-                const toInput = document.getElementById('to-date');
-                let days = 1;
-                if (fromInput && toInput && fromInput.value && toInput.value) {
-                    const from = new Date(fromInput.value);
-                    const to = new Date(toInput.value);
-                    const msPerDay = 24 * 60 * 60 * 1000;
-                    days = Math.ceil((to - from) / msPerDay) || 1;
-                    if (days < 1) days = 1;
+            // Special-case: Airport Transfer is per vehicle (flat €15) for up to 7 people
+            if (category === 'transportation' && id === 'airport-transfer') {
+                const vehiclePrice = programData.price || 15;
+                // If total people <=7, price is vehiclePrice; else prompt contact
+                if (totalPeople <= 7 && totalPeople >= 1) {
+                    totalPrice = vehiclePrice;
+                } else if (totalPeople > 7) {
+                    // Show message and set total price to 0 to indicate custom pricing
+                    totalPrice = 0;
+                    const contactNote = document.getElementById('contact-note');
+                    if (contactNote) contactNote.style.display = 'block';
                 }
-                adultPrice = programData.price || 0;
-                totalPrice = adultPrice * days;
+                adultPrice = vehiclePrice;
             } else if (programData.groupPricing) {
                 if (category === 'activity') {
                     totalPrice = calculateDynamicPrice(id, totalPeople);
