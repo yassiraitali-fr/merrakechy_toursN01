@@ -1105,6 +1105,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
 
+    // Make serviceDetails globally available
+    window.serviceDetails = serviceDetails;
+
     // Destination data
     const destinationDetails = {
         marrakech: {
@@ -2626,4 +2629,3 @@ const slider = new Swiper('.hero-slider', {
   keyboard: true,
   pagination: { el: '.slider-nav', clickable: true }
 });
-
