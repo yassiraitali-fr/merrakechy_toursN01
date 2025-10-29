@@ -2661,14 +2661,18 @@ const rentalServices = {
         additionalInfo: { 'Insurance': 'Included', 'Deposit': '€300 refundable' }
     },
     'suv-car': {
-        title: '4x4 SUV',
-        subtitle: 'Rugged vehicle for adventurous trips',
+        title: 'Suzuki Cupra',
+        subtitle: 'Sporty and capable crossover',
         price: 90, // 90 EUR (900 DH)
         priceDH: 900,
         duration: 'Per day',
         location: 'Various regions',
-        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
-        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd6f1b21b565c46cfbeefc73ca49beeee?format=webp&width=800',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+        galleryImages: [
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2Fd0e9d720ca0c407f8bb641e477863fa8?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F8ce3f8f5437b4b5bbfccfbc1ace1844d?format=webp&width=800'
+        ],
         description: 'Rugged 4x4 vehicle suitable for desert and mountain trips. Includes insurance and GPS.',
         includes: ['4x4 vehicle', 'Insurance', 'GPS'],
         bring: ['Driver license', 'ID/passport'],
