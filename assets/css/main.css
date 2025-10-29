@@ -175,6 +175,32 @@ Testimonials Section
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Avatar initial for testimonials */
+.testimonial-author .avatar-initial {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+    margin-right: 12px;
+}
+
+.testimonial-author .author-info h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.testimonial-author .author-info span {
+    display: block;
+    font-size: 13px;
+    color: var(--text-gray);
+}
+
 .author-info h4 {
     color: var(--secondary-color);
     margin-bottom: 5px;
