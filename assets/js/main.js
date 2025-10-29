@@ -2642,14 +2642,18 @@ const rentalServices = {
         additionalInfo: { 'Security Deposit': '€150', 'Cancellation': 'Free up to 48h before' }
     },
     'economy-car': {
-        title: 'Economy Car',
-        subtitle: 'Fuel-efficient economy car',
+        title: 'Volkswagen Tiguan',
+        subtitle: 'Reliable and comfortable SUV',
         price: 90, // 90 EUR (900 DH)
         priceDH: 900,
         duration: 'Per day',
         location: 'Marrakech',
-        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F16a9c70e3aa44a77aaef35f544046480?format=webp&width=800',
-        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F16a9c70e3aa44a77aaef35f544046480?format=webp&width=800',
+        heroImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F551863604ee341288552027b69b73338?format=webp&width=800',
+        mainImage: 'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F551863604ee341288552027b69b73338?format=webp&width=800',
+        galleryImages: [
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F551863604ee341288552027b69b73338?format=webp&width=800',
+            'https://cdn.builder.io/api/v1/image/assets%2Febf795d6c8da431a8f531ecf6a092611%2F07ec11f9fb754f7f83f259328a8c5983?format=webp&width=800'
+        ],
         description: 'Fuel-efficient economy car, ideal for city driving and day trips. Includes insurance and 24/7 assistance.',
         includes: ['Vehicle rental', 'Insurance', 'Unlimited mileage'],
         bring: ['Driver license', 'ID/passport', 'Credit card for deposit'],
