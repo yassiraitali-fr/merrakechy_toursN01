@@ -259,9 +259,8 @@ function initializeForm() {
         const bikeIds = new Set(['city-bike', 'mountain-bike']);
 
         if (bikeIds.has(programId)) {
-            // Bike rental: show Number of bikes and ensure it is submitted as number_of_bikes
+            // Bike rental: show Number of bikes (label only). We'll populate hidden number_of_bikes for FormSubmit.
             if (adultsLabel) adultsLabel.textContent = 'Number of bikes*';
-            if (adultsSelectEl) adultsSelectEl.name = 'number_of_bikes';
         } else {
             // Car rental (or other rentals): remove visible "Adults/Number of bikes" field completely
             if (adultsSelectEl) {
