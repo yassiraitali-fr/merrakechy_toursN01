@@ -132,25 +132,33 @@ function displayProgramInfo(data, category, id) {
 
 function updatePricingDisplay(data) {
     const summaryPriceEl = document.getElementById('summary-price');
-    
     if (!summaryPriceEl) return;
-    
-    // Get prices based on data structure
+
+    const category = document.getElementById('category') ? document.getElementById('category').value : '';
+    const id = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+
+    // Special case: Airport transfer is €15 per person for everyone
+    if (category === 'transportation' && id === 'airport-transfer') {
+        summaryPriceEl.innerHTML = `
+            <div class="pricing-breakdown">
+                <div class="price-item">Everyone: €15/person</div>
+            </div>
+        `;
+        updateTotalPrice();
+        return;
+    }
+
+    // Generic pricing display
     let adultPrice, childPrice;
-    
     if (data.pricing) {
-        // New pricing structure
         adultPrice = data.pricing.adult;
         childPrice = data.pricing.child;
     } else {
-        // Fallback to old structure
         adultPrice = data.price || 0;
         childPrice = (data.price || 0) * 0.5;
     }
-    
-    // Update the pricing display
+
     if (adultPrice !== childPrice) {
-        // Show both adult and children prices
         summaryPriceEl.innerHTML = `
             <div class="pricing-breakdown">
                 <div class="price-item">Adults: €${adultPrice}/person</div>
@@ -158,11 +166,9 @@ function updatePricingDisplay(data) {
             </div>
         `;
     } else {
-        // Show single price
-        summaryPriceEl.textContent = `$${adultPrice}/person`;
+        summaryPriceEl.textContent = `€${adultPrice}/person`;
     }
-    
-    // Calculate initial total
+
     updateTotalPrice();
 }
 
@@ -258,41 +264,25 @@ function initializeForm() {
     // Initial participant update
     updateParticipants();
 
-    // Special handling for airport-transfer: hide children, enforce 1-7 people note
+    // Special handling for airport-transfer: hide children; show contact note if >7
     const programId = document.getElementById('program-id').value;
     if (category === 'transportation' && programId === 'airport-transfer') {
         const childrenSelectEl = document.getElementById('children');
         if (childrenSelectEl) {
-            // Hide children select row
             const parent = childrenSelectEl.closest('.form-group');
             if (parent) parent.style.display = 'none';
             childrenSelectEl.value = '0';
         }
 
-        // Update summary participants note
-        const summaryParticipants = document.getElementById('summary-participants');
-        if (summaryParticipants) {
-            summaryParticipants.textContent = '1-7 people — For groups above 7 please contact us for a custom price';
-        }
-
-        // Ensure adult select max is 7
         const adultsSelectEl = document.getElementById('adults');
         if (adultsSelectEl) {
-            // If options exceed 7, clamp value and warn
-            if (parseInt(adultsSelectEl.value, 10) > 7) {
-                alert('For groups above 7 people please contact us for a custom price.');
-                adultsSelectEl.value = '7';
-            }
-            // Add listener to enforce cap
             adultsSelectEl.addEventListener('change', function() {
-                const val = parseInt(this.value, 10) || 1;
-                if (val > 7) {
-                    alert('For groups above 7 people please contact us for a custom price.');
-                    this.value = '7';
-                }
                 updateParticipants();
             });
         }
+
+        // Initial note state
+        updateTotalPrice();
     }
 }
 
@@ -304,10 +294,16 @@ function updateParticipants() {
     if (adultsSelect && childrenSelect && summaryParticipants) {
         const adults = parseInt(adultsSelect.value) || 2;
         const children = parseInt(childrenSelect.value) || 0;
-        
-        summaryParticipants.textContent = `${adults} adult${adults !== 1 ? 's' : ''}, ${children} child${children !== 1 ? 'ren' : ''}`;
-        
-        // Update total price
+        const category = document.getElementById('category') ? document.getElementById('category').value : '';
+        const id = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+
+        if (category === 'transportation' && id === 'airport-transfer') {
+            const totalPeople = adults + 0; // children hidden
+            summaryParticipants.textContent = `${totalPeople} ${totalPeople === 1 ? 'person' : 'people'}`;
+        } else {
+            summaryParticipants.textContent = `${adults} adult${adults !== 1 ? 's' : ''}, ${children} child${children !== 1 ? 'ren' : ''}`;
+        }
+
         updateTotalPrice();
     }
 }
@@ -344,17 +340,19 @@ function updateTotalPrice() {
         if (programData) {
             // Special-case: Airport Transfer is per vehicle (flat €15) for up to 7 people
             if (category === 'transportation' && id === 'airport-transfer') {
-                const vehiclePrice = programData.price || 15;
-                // If total people <=7, price is vehiclePrice; else prompt contact
-                if (totalPeople <= 7 && totalPeople >= 1) {
-                    totalPrice = vehiclePrice;
+                const perPerson = 15;
+                const notice = document.getElementById('group-contact-note');
+
+                if (totalPeople >= 1 && totalPeople <= 7) {
+                    totalPrice = perPerson * totalPeople;
+                    if (notice) notice.style.display = 'none';
                 } else if (totalPeople > 7) {
-                    // Show message and set total price to 0 to indicate custom pricing
                     totalPrice = 0;
-                    const contactNote = document.getElementById('contact-note');
-                    if (contactNote) contactNote.style.display = 'block';
+                    if (notice) notice.style.display = 'block';
                 }
-                adultPrice = vehiclePrice;
+
+                adultPrice = perPerson;
+                childPrice = perPerson;
             } else if (programData.groupPricing) {
                 if (category === 'activity') {
                     totalPrice = calculateDynamicPrice(id, totalPeople);
@@ -381,18 +379,18 @@ function updateTotalPrice() {
         const breakdownEl = document.getElementById("price-breakdown");
         if (breakdownEl) {
             breakdownEl.innerHTML = `
-                <div class="breakdown-item">
-                    <span>Adults (${adults} × $${adultPrice.toFixed(2)}):</span>
-                    <span>$${(adults * adultPrice).toFixed(2)}</span>
+                <div class=\"breakdown-item\">
+                    <span>Adults (${adults} × €${adultPrice.toFixed(2)}):</span>
+                    <span>€${(adults * adultPrice).toFixed(2)}</span>
                 </div>
                 ${children > 0 ? `
-                <div class="breakdown-item">
-                    <span>Children (${children} × $${childPrice.toFixed(2)}):</span>
-                    <span>$${(children * childPrice).toFixed(2)}</span>
+                <div class=\"breakdown-item\">
+                    <span>Children (${children} × €${childPrice.toFixed(2)}):</span>
+                    <span>€${(children * childPrice).toFixed(2)}</span>
                 </div>` : ''}
-                <div class="breakdown-total">
+                <div class=\"breakdown-total\">
                     <span>Total:</span>
-                    <span>$${totalPrice.toFixed(2)}</span>
+                    <span>€${totalPrice.toFixed(2)}</span>
                 </div>
             `;
         }
