@@ -1,4 +1,4 @@
-// Updated checkout.js - Handles Adult/Children Pricing Structure
+// Updated checkout.js - Handles Adult/Children Pricing Structure and Rentals by days
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== CHECKOUT DEBUG ===');
@@ -76,7 +76,6 @@ function displayProgramInfo(data, category, id) {
     // Handle dynamic pricing first
     if (data.groupPricing) {
         // For group pricing, we don't set fixed adult/child prices here
-        // The calculation will happen in updateTotalPrice based on the groupPricing tiers
         document.getElementById("program-price").value = 0; // Placeholder, actual price calculated later
         let childrenPriceInput = document.getElementById("children-price");
         if (!childrenPriceInput) {
@@ -89,6 +88,7 @@ function displayProgramInfo(data, category, id) {
         childrenPriceInput.value = 0; // Placeholder
     } else if (data.pricing) {
         // New pricing structure with adult/children prices
+        // For non-rentals we keep the existing structure
         document.getElementById("program-price").value = data.pricing.adult;
 
         // Add hidden field for children price
@@ -105,7 +105,7 @@ function displayProgramInfo(data, category, id) {
         // Fallback to old pricing structure
         document.getElementById("program-price").value = data.price || 0;
 
-        // Calculate children price as 50% of adult price for backward compatibility
+        // Calculate children price as 50% of adult price for backward compatibility (will be ignored for rentals)
         let childrenPriceInput = document.getElementById("children-price");
         if (!childrenPriceInput) {
             childrenPriceInput = document.createElement("input");
@@ -132,25 +132,45 @@ function displayProgramInfo(data, category, id) {
 
 function updatePricingDisplay(data) {
     const summaryPriceEl = document.getElementById('summary-price');
-    
     if (!summaryPriceEl) return;
-    
-    // Get prices based on data structure
+
+    const category = document.getElementById('category') ? document.getElementById('category').value : '';
+    const id = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+
+    // Special case: Airport transfer is €15 per person for everyone
+    if (category === 'transportation' && id === 'airport-transfer') {
+        summaryPriceEl.innerHTML = `
+            <div class="pricing-breakdown">
+                <div class="price-item">Everyone: €15/person</div>
+            </div>
+        `;
+        updateTotalPrice();
+        return;
+    }
+
+    // Rental: show single per-day price
+    if (category === 'rental') {
+        const perDay = data.price || 0;
+        summaryPriceEl.innerHTML = `
+            <div class="pricing-breakdown">
+                <div class="price-item">Price: €${perDay}/day</div>
+            </div>
+        `;
+        updateTotalPrice();
+        return;
+    }
+
+    // Generic pricing display
     let adultPrice, childPrice;
-    
     if (data.pricing) {
-        // New pricing structure
         adultPrice = data.pricing.adult;
         childPrice = data.pricing.child;
     } else {
-        // Fallback to old structure
         adultPrice = data.price || 0;
         childPrice = (data.price || 0) * 0.5;
     }
-    
-    // Update the pricing display
+
     if (adultPrice !== childPrice) {
-        // Show both adult and children prices
         summaryPriceEl.innerHTML = `
             <div class="pricing-breakdown">
                 <div class="price-item">Adults: €${adultPrice}/person</div>
@@ -158,11 +178,9 @@ function updatePricingDisplay(data) {
             </div>
         `;
     } else {
-        // Show single price
-        summaryPriceEl.textContent = `$${adultPrice}/person`;
+        summaryPriceEl.textContent = `€${adultPrice}/person`;
     }
-    
-    // Calculate initial total
+
     updateTotalPrice();
 }
 
@@ -216,13 +234,52 @@ function initializeForm() {
         });
     }
 
-    // Rental-specific handling: show From/To and compute total days
+    // Rental-specific handling: show From/To, hide children, compute total days
     const category = document.getElementById('category').value;
     if (category === 'rental') {
         const rentalPeriod = document.getElementById('rental-period');
         const singleDateGroup = document.getElementById('single-date-group');
         if (rentalPeriod) rentalPeriod.style.display = 'block';
         if (singleDateGroup) singleDateGroup.style.display = 'none';
+
+        // Hide children selector for rentals
+        const childrenSelectEl = document.getElementById('children');
+        if (childrenSelectEl) {
+            const parent = childrenSelectEl.closest('.form-group');
+            if (parent) parent.style.display = 'none';
+            childrenSelectEl.value = '0';
+        }
+
+        // For rentals: show 'Number of bikes' only for bike rentals; remove the field for car rentals
+        const adultsLabel = document.querySelector('label[for="adults"]');
+        const adultsSelectEl = document.getElementById('adults');
+        const programId = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+
+        // Define bike identifiers (extend if more bike ids are added)
+        const bikeIds = new Set(['city-bike', 'mountain-bike']);
+
+        if (bikeIds.has(programId)) {
+            // Bike rental: show Number of bikes (label only). We'll populate hidden number_of_bikes for FormSubmit.
+            if (adultsLabel) adultsLabel.textContent = 'Number of bikes*';
+        } else {
+            // Car rental (or other rentals): remove visible "Adults/Number of bikes" field completely
+            if (adultsSelectEl) {
+                const formGroup = adultsSelectEl.closest('.form-group');
+                if (formGroup) formGroup.remove();
+            }
+
+            // Ensure a hidden input with id 'adults' exists so calculation code still finds it
+            // and the form still submits a default quantity of 1 if needed.
+            if (!document.getElementById('adults')) {
+                const hiddenAdults = document.createElement('input');
+                hiddenAdults.type = 'hidden';
+                hiddenAdults.id = 'adults';
+                hiddenAdults.name = 'adults';
+                hiddenAdults.value = '1';
+                const formEl = document.getElementById('checkout-form');
+                if (formEl) formEl.appendChild(hiddenAdults);
+            }
+        }
 
         const fromInput = document.getElementById('from-date');
         const toInput = document.getElementById('to-date');
@@ -258,41 +315,25 @@ function initializeForm() {
     // Initial participant update
     updateParticipants();
 
-    // Special handling for airport-transfer: hide children, enforce 1-7 people note
+    // Special handling for airport-transfer: hide children; show contact note if >7
     const programId = document.getElementById('program-id').value;
     if (category === 'transportation' && programId === 'airport-transfer') {
         const childrenSelectEl = document.getElementById('children');
         if (childrenSelectEl) {
-            // Hide children select row
             const parent = childrenSelectEl.closest('.form-group');
             if (parent) parent.style.display = 'none';
             childrenSelectEl.value = '0';
         }
 
-        // Update summary participants note
-        const summaryParticipants = document.getElementById('summary-participants');
-        if (summaryParticipants) {
-            summaryParticipants.textContent = '1-7 people — For groups above 7 please contact us for a custom price';
-        }
-
-        // Ensure adult select max is 7
         const adultsSelectEl = document.getElementById('adults');
         if (adultsSelectEl) {
-            // If options exceed 7, clamp value and warn
-            if (parseInt(adultsSelectEl.value, 10) > 7) {
-                alert('For groups above 7 people please contact us for a custom price.');
-                adultsSelectEl.value = '7';
-            }
-            // Add listener to enforce cap
             adultsSelectEl.addEventListener('change', function() {
-                const val = parseInt(this.value, 10) || 1;
-                if (val > 7) {
-                    alert('For groups above 7 people please contact us for a custom price.');
-                    this.value = '7';
-                }
                 updateParticipants();
             });
         }
+
+        // Initial note state
+        updateTotalPrice();
     }
 }
 
@@ -302,12 +343,57 @@ function updateParticipants() {
     const summaryParticipants = document.getElementById('summary-participants');
     
     if (adultsSelect && childrenSelect && summaryParticipants) {
-        const adults = parseInt(adultsSelect.value) || 2;
+        const adults = parseInt(adultsSelect.value) || 1; // used as quantity for rentals
         const children = parseInt(childrenSelect.value) || 0;
-        
-        summaryParticipants.textContent = `${adults} adult${adults !== 1 ? 's' : ''}, ${children} child${children !== 1 ? 'ren' : ''}`;
-        
-        // Update total price
+        const category = document.getElementById('category') ? document.getElementById('category').value : '';
+        const id = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+
+        if (category === 'transportation' && id === 'airport-transfer') {
+            const totalPeople = adults + 0; // children hidden
+            summaryParticipants.textContent = `${totalPeople} ${totalPeople === 1 ? 'person' : 'people'}`;
+        } else if (category === 'rental') {
+            // Show quantity and days for rentals
+            const fromInput = document.getElementById('from-date');
+            const toInput = document.getElementById('to-date');
+            let days = 1;
+            if (fromInput && toInput && fromInput.value && toInput.value) {
+                const fromVal = new Date(fromInput.value);
+                const toVal = new Date(toInput.value);
+                const msPerDay = 1000 * 60 * 60 * 24;
+                const diff = Math.round((toVal - fromVal) / msPerDay);
+                days = Math.max(1, diff || 0);
+            }
+            summaryParticipants.textContent = `${adults} item${adults !== 1 ? 's' : ''} — ${days} day${days !== 1 ? 's' : ''}`;
+
+            // Update hidden quantity fields for FormSubmit
+            const hiddenBikes = document.getElementById('number_of_bikes');
+            const hiddenCars = document.getElementById('number_of_cars');
+            const quantityField = document.getElementById('quantity');
+            const programId = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+            const bikeIds = new Set(['city-bike', 'mountain-bike']);
+
+            if (bikeIds.has(programId)) {
+                if (hiddenBikes) hiddenBikes.value = adults.toString();
+                if (hiddenCars) hiddenCars.value = '';
+                if (quantityField) quantityField.value = adults.toString();
+            } else {
+                // car or other rental
+                if (hiddenCars) hiddenCars.value = adults.toString();
+                if (hiddenBikes) hiddenBikes.value = '';
+                if (quantityField) quantityField.value = adults.toString();
+            }
+        } else {
+            summaryParticipants.textContent = `${adults} adult${adults !== 1 ? 's' : ''}, ${children} child${children !== 1 ? 'ren' : ''}`;
+
+            // Clear hidden fields for non-rentals
+            const hiddenBikes = document.getElementById('number_of_bikes');
+            const hiddenCars = document.getElementById('number_of_cars');
+            const quantityField = document.getElementById('quantity');
+            if (hiddenBikes) hiddenBikes.value = '';
+            if (hiddenCars) hiddenCars.value = '';
+            if (quantityField) quantityField.value = '';
+        }
+
         updateTotalPrice();
     }
 }
@@ -344,17 +430,36 @@ function updateTotalPrice() {
         if (programData) {
             // Special-case: Airport Transfer is per vehicle (flat €15) for up to 7 people
             if (category === 'transportation' && id === 'airport-transfer') {
-                const vehiclePrice = programData.price || 15;
-                // If total people <=7, price is vehiclePrice; else prompt contact
-                if (totalPeople <= 7 && totalPeople >= 1) {
-                    totalPrice = vehiclePrice;
+                const perPerson = 15;
+                const notice = document.getElementById('group-contact-note');
+
+                if (totalPeople >= 1 && totalPeople <= 7) {
+                    totalPrice = perPerson * totalPeople;
+                    if (notice) notice.style.display = 'none';
                 } else if (totalPeople > 7) {
-                    // Show message and set total price to 0 to indicate custom pricing
                     totalPrice = 0;
-                    const contactNote = document.getElementById('contact-note');
-                    if (contactNote) contactNote.style.display = 'block';
+                    if (notice) notice.style.display = 'block';
                 }
-                adultPrice = vehiclePrice;
+
+                adultPrice = perPerson;
+                childPrice = perPerson;
+            } else if (category === 'rental' && programData.price) {
+                // Rental pricing: price per day * number of days * quantity (adults select used as quantity)
+                const fromInput = document.getElementById('from-date');
+                const toInput = document.getElementById('to-date');
+                let days = 1;
+                if (fromInput && toInput && fromInput.value && toInput.value) {
+                    const fromVal = new Date(fromInput.value);
+                    const toVal = new Date(toInput.value);
+                    const msPerDay = 1000 * 60 * 60 * 24;
+                    const diff = Math.round((toVal - fromVal) / msPerDay);
+                    days = Math.max(1, diff || 0);
+                }
+                const quantity = adults; // use adults select as quantity for rentals
+                const perDay = programData.price;
+                totalPrice = perDay * days * quantity;
+                adultPrice = perDay; // per day price
+                childPrice = perDay;
             } else if (programData.groupPricing) {
                 if (category === 'activity') {
                     totalPrice = calculateDynamicPrice(id, totalPeople);
@@ -362,8 +467,8 @@ function updateTotalPrice() {
                     totalPrice = calculateDynamicTourPrice(id, totalPeople);
                 }
                 // For display purposes in breakdown, we can approximate per person price
-                adultPrice = totalPrice / totalPeople;
-                childPrice = totalPrice / totalPeople; // Assuming same for children in group pricing
+                adultPrice = totalPrice / (totalPeople || 1);
+                childPrice = totalPrice / (totalPeople || 1); // Assuming same for children in group pricing
             } else if (programData.pricing) {
                 adultPrice = programData.pricing.adult;
                 childPrice = programData.pricing.child;
@@ -380,21 +485,52 @@ function updateTotalPrice() {
         // Update detailed breakdown if it exists
         const breakdownEl = document.getElementById("price-breakdown");
         if (breakdownEl) {
-            breakdownEl.innerHTML = `
-                <div class="breakdown-item">
-                    <span>Adults (${adults} × $${adultPrice.toFixed(2)}):</span>
-                    <span>$${(adults * adultPrice).toFixed(2)}</span>
-                </div>
-                ${children > 0 ? `
-                <div class="breakdown-item">
-                    <span>Children (${children} × $${childPrice.toFixed(2)}):</span>
-                    <span>$${(children * childPrice).toFixed(2)}</span>
-                </div>` : ''}
-                <div class="breakdown-total">
-                    <span>Total:</span>
-                    <span>$${totalPrice.toFixed(2)}</span>
-                </div>
-            `;
+            // Build breakdown based on category
+            const cat = category;
+            if (cat === 'rental') {
+                // Show quantity × days × per day price
+                const fromInput = document.getElementById('from-date');
+                const toInput = document.getElementById('to-date');
+                let days = 1;
+                if (fromInput && toInput && fromInput.value && toInput.value) {
+                    const fromVal = new Date(fromInput.value);
+                    const toVal = new Date(toInput.value);
+                    const msPerDay = 1000 * 60 * 60 * 24;
+                    const diff = Math.round((toVal - fromVal) / msPerDay);
+                    days = Math.max(1, diff || 0);
+                }
+                const quantity = adults;
+                breakdownEl.innerHTML = `
+                    <div class="breakdown-item">
+                        <span>Price (€${adultPrice.toFixed(2)} / day)</span>
+                        <span>€${adultPrice.toFixed(2)}</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Quantity × Days (${quantity} × ${days})</span>
+                        <span>€${(quantity * days * adultPrice).toFixed(2)}</span>
+                    </div>
+                    <div class="breakdown-total">
+                        <span>Total:</span>
+                        <span>€${totalPrice.toFixed(2)}</span>
+                    </div>
+                `;
+            } else {
+                breakdownEl.innerHTML = `
+                    <div class="breakdown-item">
+                        <span>Adults (${adults} × €${adultPrice.toFixed(2)}):</span>
+                        <span>€${(adults * adultPrice).toFixed(2)}</span>
+                    </div>
+                    ${children > 0 ? `
+                    <div class="breakdown-item">
+                        <span>Children (${children} × €${childPrice.toFixed(2)}):</span>
+                        <span>€${(children * childPrice).toFixed(2)}</span>
+                    </div>` : ''}
+                    <div class="breakdown-total">
+                        <span>Total:</span>
+                        <span>€${totalPrice.toFixed(2)}</span>
+                    </div>
+                `;
+            }
         }
 
         console.log("Price calculation:", {

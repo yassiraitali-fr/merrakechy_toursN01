@@ -36,7 +36,7 @@ const transportationData = {
             'Cancellation': 'Free up to 24h before',
             'NOTE' :  ' Pickup/drop-off 10 km+ from Marrakech: €20 per vehicle'
         },
-        priceUnit: '/vehicle (up to 4 people)',
+        priceUnit: '/person (up to 7 people)',
         relatedPrograms: ['private-driver', 'intercity-transfer', 'camel-ride']
     },
 

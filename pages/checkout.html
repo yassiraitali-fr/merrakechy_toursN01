@@ -120,7 +120,7 @@
 
                     <form id="checkout-form" action="https://formsubmit.co/aitaliyassir55@gmail.com" method="POST">
                         <!-- Hidden fields for FormSubmit -->
-                        <input type="hidden" name="_next" value="http://127.0.0.1:5500/pages/booking-confirmation.html">
+                        <input type="hidden" name="_next" value="https://merrakechytours.com/pages/booking-confirmation.html">
                         <input type="hidden" name="_subject" value="New Booking: MerrakechyTours">
                         <input type="hidden" name="_captcha" value="false">
 
@@ -130,6 +130,10 @@
                         <input type="hidden" id="program-price" name="program-price" value="">
                         <input type="hidden" id="total-price" name="total_price" value="">
                         <input type="hidden" id="program-name-hidden" name="program_name" value="">
+                        <!-- Hidden quantity fields for FormSubmit -->
+                        <input type="hidden" id="number_of_bikes" name="number_of_bikes" value="">
+                        <input type="hidden" id="number_of_cars" name="number_of_cars" value="">
+                        <input type="hidden" id="quantity" name="quantity" value="">
 
                         <!-- Personal Information -->
                         <div class="checkout-section">
@@ -364,6 +368,14 @@
                         </div>
 
                         <div class="summary-divider"></div>
+
+                        <div id="group-contact-note" class="group-contact-note">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="note-content">
+                                <p>For groups larger than 7, please contact us for a custom price.</p>
+                                <a href="contact.html" class="btn btn-secondary btn-full">Contact us</a>
+                            </div>
+                        </div>
 
                         <div class="summary-item total">
                             <span class="summary-label">Total Price:</span>
