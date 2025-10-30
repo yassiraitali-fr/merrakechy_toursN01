@@ -9041,3 +9041,36 @@ Booking confirmation page
 #lightbox-overlay {
     z-index: 99999 !important;
 }
+
+/* Checkout: Group contact note for >7 people */
+.group-contact-note {
+    display: none;
+    padding: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
+    border-left: 4px solid var(--accent-color);
+    background: var(--bg-light);
+    border-radius: var(--border-radius-sm);
+    display: none;
+}
+.group-contact-note i {
+    color: var(--accent-color);
+    margin-right: 10px;
+}
+.group-contact-note .note-content p {
+    margin: 0 0 var(--spacing-xs);
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+/* VIP Badge styling */
+.vip-badge {
+    color: var(--accent-color);
+    font-weight: 700;
+    letter-spacing: 1px;
+    animation: vipShimmer 2s ease-in-out infinite;
+}
+@keyframes vipShimmer {
+    0% { text-shadow: 0 0 0 rgba(232, 170, 66, 0.5); }
+    50% { text-shadow: 0 0 10px rgba(232, 170, 66, 0.9); }
+    100% { text-shadow: 0 0 0 rgba(232, 170, 66, 0.5); }
+}
