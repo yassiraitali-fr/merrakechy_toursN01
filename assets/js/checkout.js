@@ -250,15 +250,36 @@ function initializeForm() {
             childrenSelectEl.value = '0';
         }
 
-        // Change label "Adults" to "Number of bikes" and update select name so it's submitted as number_of_bikes
+        // For rentals: show 'Number of bikes' only for bike rentals; remove the field for car rentals
         const adultsLabel = document.querySelector('label[for="adults"]');
         const adultsSelectEl = document.getElementById('adults');
-        if (adultsLabel) {
-            adultsLabel.textContent = 'Number of bikes*';
-        }
-        if (adultsSelectEl) {
-            // Change the name attribute so FormSubmit receives this field as number_of_bikes
-            adultsSelectEl.name = 'number_of_bikes';
+        const programId = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+
+        // Define bike identifiers (extend if more bike ids are added)
+        const bikeIds = new Set(['city-bike', 'mountain-bike']);
+
+        if (bikeIds.has(programId)) {
+            // Bike rental: show Number of bikes and ensure it is submitted as number_of_bikes
+            if (adultsLabel) adultsLabel.textContent = 'Number of bikes*';
+            if (adultsSelectEl) adultsSelectEl.name = 'number_of_bikes';
+        } else {
+            // Car rental (or other rentals): remove visible "Adults/Number of bikes" field completely
+            if (adultsSelectEl) {
+                const formGroup = adultsSelectEl.closest('.form-group');
+                if (formGroup) formGroup.remove();
+            }
+
+            // Ensure a hidden input with id 'adults' exists so calculation code still finds it
+            // and the form still submits a default quantity of 1 if needed.
+            if (!document.getElementById('adults')) {
+                const hiddenAdults = document.createElement('input');
+                hiddenAdults.type = 'hidden';
+                hiddenAdults.id = 'adults';
+                hiddenAdults.name = 'adults';
+                hiddenAdults.value = '1';
+                const formEl = document.getElementById('checkout-form');
+                if (formEl) formEl.appendChild(hiddenAdults);
+            }
         }
 
         const fromInput = document.getElementById('from-date');
