@@ -250,6 +250,17 @@ function initializeForm() {
             childrenSelectEl.value = '0';
         }
 
+        // Change label "Adults" to "Number of bikes" and update select name so it's submitted as number_of_bikes
+        const adultsLabel = document.querySelector('label[for="adults"]');
+        const adultsSelectEl = document.getElementById('adults');
+        if (adultsLabel) {
+            adultsLabel.textContent = 'Number of bikes*';
+        }
+        if (adultsSelectEl) {
+            // Change the name attribute so FormSubmit receives this field as number_of_bikes
+            adultsSelectEl.name = 'number_of_bikes';
+        }
+
         const fromInput = document.getElementById('from-date');
         const toInput = document.getElementById('to-date');
 
