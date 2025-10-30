@@ -364,8 +364,34 @@ function updateParticipants() {
                 days = Math.max(1, diff || 0);
             }
             summaryParticipants.textContent = `${adults} item${adults !== 1 ? 's' : ''} — ${days} day${days !== 1 ? 's' : ''}`;
+
+            // Update hidden quantity fields for FormSubmit
+            const hiddenBikes = document.getElementById('number_of_bikes');
+            const hiddenCars = document.getElementById('number_of_cars');
+            const quantityField = document.getElementById('quantity');
+            const programId = document.getElementById('program-id') ? document.getElementById('program-id').value : '';
+            const bikeIds = new Set(['city-bike', 'mountain-bike']);
+
+            if (bikeIds.has(programId)) {
+                if (hiddenBikes) hiddenBikes.value = adults.toString();
+                if (hiddenCars) hiddenCars.value = '';
+                if (quantityField) quantityField.value = adults.toString();
+            } else {
+                // car or other rental
+                if (hiddenCars) hiddenCars.value = adults.toString();
+                if (hiddenBikes) hiddenBikes.value = '';
+                if (quantityField) quantityField.value = adults.toString();
+            }
         } else {
             summaryParticipants.textContent = `${adults} adult${adults !== 1 ? 's' : ''}, ${children} child${children !== 1 ? 'ren' : ''}`;
+
+            // Clear hidden fields for non-rentals
+            const hiddenBikes = document.getElementById('number_of_bikes');
+            const hiddenCars = document.getElementById('number_of_cars');
+            const quantityField = document.getElementById('quantity');
+            if (hiddenBikes) hiddenBikes.value = '';
+            if (hiddenCars) hiddenCars.value = '';
+            if (quantityField) quantityField.value = '';
         }
 
         updateTotalPrice();
